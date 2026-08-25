@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 project(example)
 
+# glad (pulled in by libigl) and a few other dependencies still declare
+# cmake_minimum_required(VERSION 3.0), which CMake 4.x rejects outright.
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+
 list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # Libigl
@@ -33,3 +37,11 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC SOURCE_PATH="${CMAKE_CURRENT_S
 target_link_libraries(${PROJECT_NAME} PUBLIC igl::glfw TinyAD)
 # tinyad needs C++17 (not sure if that means this project does too)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+
+# Apple clang searches /usr/local/include *before* any -isystem path, so a
+# system-installed Eigen would shadow the Eigen 3.4.0 that libigl fetches (which
+# fails to compile: newer Eigen drops MappedSparseMatrix/DynamicSparseMatrix).
+# Demoting libigl's Eigen from a SYSTEM include to a plain -I makes it win.
+if(TARGET Eigen3_Eigen)
+  set_property(TARGET Eigen3_Eigen PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "")
+endif()
