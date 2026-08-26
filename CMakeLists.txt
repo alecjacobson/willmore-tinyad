@@ -16,8 +16,12 @@ igl_include(glfw)
 include(FetchContent)
 FetchContent_Declare(
   tinyad
-  GIT_REPOSITORY https://github.com/patr-schm/tinyad.git
-  GIT_TAG 75093e14ef0d7bb39657c5f3b2aba1251afaa38c
+  GIT_REPOSITORY https://github.com/alecjacobson/TinyAD.git
+  # Fork of patr-schm/TinyAD. Needs #18 ("Workaround for Dynamic Element Size")
+  # for add_elements_dynamic, plus a local branch adding element_valence_range_t
+  # so the supported valences can be given as a half-open interval. Move back to
+  # upstream once that is merged.
+  GIT_TAG 4b2b3b0c9575a97eea3546bb17457829da097e41
 )
 #FetchContent_MakeAvailable(tinyad)
 
